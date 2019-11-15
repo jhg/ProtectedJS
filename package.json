@@ -1,0 +1,22 @@
+{
+  "name": "node-pjs",
+  "version": "1.0.0",
+  "description": "Support for Protected JS files",
+  "main": "index.js",
+  "bin": {
+    "pjs": "bin/pjs.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "pjs"
+  ],
+  "author": "Jesús Hernández Gormaz <0.jesus.hg@gmail.com>",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "devDependencies": {
+    "mocha": "^6.2.2",
+    "mock-fs": "^4.10.3"
+  }
+}
