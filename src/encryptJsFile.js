@@ -34,10 +34,15 @@ function encryptJsString(src, password){
   return protectedJS;
 }
 
-module.exports = function(jsPath, pjsPath, password){
+function encryptJsFile(jsPath, pjsPath, password){
   // Load source JS
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let protectedJS = encryptJsString(src, password);
   // Write ProtectedJS
   fs.writeFileSync(pjsPath, protectedJS, {encoding: 'binary'});
+}
+
+module.exports = {
+  encryptJsString: encryptJsString,
+  encryptJsFile: encryptJsFile
 };

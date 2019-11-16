@@ -1,2 +1,6 @@
-module.exports.importPjsFile = require('./src/importPjsFile.js');
-module.exports.encryptJsFile = require('./src/encryptJsFile.js');
+const loaderPjs = require('./src/importPjsFile.js');
+const crypterPjs = require('./src/encryptJsFile.js');
+
+module.exports.importPjs = loaderPjs.importPjs;
+module.exports.importPjsFile = loaderPjs.importPjsFile;
+module.exports.encryptJsFile = crypterPjs.encryptJsFile;
