@@ -6,10 +6,10 @@ const crypto = require('crypto');
 
 module.exports = function(pjsPath, password){
   // Read ProtectedJS
-  let protectedJS = fs.readFileSync(pjsPath, {encoding: 'utf8'});
+  let protectedJS = fs.readFileSync(pjsPath, {encoding: 'binary'});
   // Decrypt ProtectedJS
   const decipher = crypto.createDecipher('aes-256-ctr', password);
-  let src = decipher.update(protectedJS, 'base64', 'binary');
+  let src = decipher.update(protectedJS, 'binary', 'binary');
   src += decipher.final('binary');
   src = zlib.gunzipSync(Buffer.from(src, 'binary')).toString('utf8');
   // Create new module from decrypted JS

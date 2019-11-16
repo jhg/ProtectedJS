@@ -11,8 +11,8 @@ module.exports = function(jsPath, pjsPath, password){
   src = zlib.gzipSync(Buffer.from(src, 'utf8'), {level: 9});
   // Encrypt source JS
   const cipher = crypto.createCipher('aes-256-ctr', password);
-  let protectedJS = cipher.update(src, 'binary', 'base64');
-  protectedJS += cipher.final('base64');
+  let protectedJS = cipher.update(src, 'binary', 'binary');
+  protectedJS += cipher.final('binary');
   // Write ProtectedJS
-  fs.writeFileSync(pjsPath, protectedJS, {encoding: 'utf8'});
+  fs.writeFileSync(pjsPath, protectedJS, {encoding: 'binary'});
 };
