@@ -1,7 +1,7 @@
 {
-  "name": "node-pjs",
+  "name": "protectedjs",
   "version": "1.0.0",
-  "description": "Support for Protected JS files",
+  "description": "Support for protected JS files",
   "main": "index.js",
   "bin": {
     "pjs": "bin/pjs.js"
