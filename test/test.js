@@ -13,8 +13,10 @@ describe('PJS', function(){
     console.log(`dummy JS ${dummyJsSize} bytes`);
   });
   after(function(){
-    let dummyPjsSize = fs.statSync("dummy.pjs")["size"];
-    console.log(`dummy PJS ${dummyPjsSize} bytes`);
+    if(fs.existsSync('dummy.pjs')){
+      let dummyPjsSize = fs.statSync("dummy.pjs")["size"];
+      console.log(`dummy PJS ${dummyPjsSize} bytes`);
+    }
     mockfs.restore();
   });
   it('should encrypt a JS file and import created PJS file', function(){
