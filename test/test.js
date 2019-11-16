@@ -5,9 +5,13 @@ const pjs = require('..');
 
 
 describe('PJS', function(){
+  // Configure mocks
   before(function(){
     mockfs({
-      "dummy.js": "module.exports = true;"
+      "dummy.js": `
+        /* This is a minimal JS module to export a true boolean */
+        module.exports = true;
+      `
     });
     let dummyJsSize = fs.statSync("dummy.js")["size"];
     console.log(`dummy JS ${dummyJsSize} bytes`);
@@ -19,6 +23,7 @@ describe('PJS', function(){
     }
     mockfs.restore();
   });
+  // Test cases
   it('should encrypt a JS file and import created PJS file', function(){
     pjs.encryptJsFile('dummy.js', 'dummy.pjs', 'dummy');
     let dummy = pjs.importPjsFile('dummy.pjs', 'dummy');
