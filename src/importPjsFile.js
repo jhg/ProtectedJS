@@ -14,7 +14,7 @@ function decryptJsString(protectedJS, password){
   return src;
 }
 
-function importPjs(protectedJS, password, filename='memory.pjs'){
+function importPjsString(protectedJS, password, filename='memory.pjs'){
   let src = decryptJsString(protectedJS, password);
   // Create new module from decrypted JS
   let dynModule = new Module();
@@ -30,10 +30,10 @@ function importPjsFile(pjsPath, password){
   // Read ProtectedJS
   let protectedJS = fs.readFileSync(pjsPath, {encoding: 'binary'});
   let filename = path.basename(pjsPath);
-  return importPjs(protectedJS, password, filename);
+  return importPjsString(protectedJS, password, filename);
 }
 
 module.exports = {
-  importPjs: importPjs,
+  importPjsString: importPjsString,
   importPjsFile: importPjsFile
 };
