@@ -18,5 +18,8 @@
   "devDependencies": {
     "mocha": "^6.2.2",
     "mock-fs": "^4.10.3"
+  },
+  "dependencies": {
+    "javascript-obfuscator": "^0.18.3"
   }
 }

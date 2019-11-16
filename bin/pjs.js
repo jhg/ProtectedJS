@@ -9,5 +9,8 @@ const sourcePath = process.argv[2];
 const outputPath = process.argv[3];
 const passwordPJS = process.argv[4];
 
-pjs.encryptJsFile(sourcePath, outputPath, passwordPJS);
-
+if (passwordPJS === '--self') {
+  pjs.selfDecryptJsFile(sourcePath, outputPath);
+} else {
+  pjs.encryptJsFile(sourcePath, outputPath, passwordPJS);
+}
