@@ -8,7 +8,7 @@ module.exports = function(pjsPath, password){
   let protectedJS = fs.readFileSync(pjsPath, {encoding: 'utf8'});
   // Decrypt ProtectedJS
   const decipher = crypto.createDecipher('aes-256-ctr', password);
-  let src = decipher.update(protectedJS, 'hex', 'utf8');
+  let src = decipher.update(protectedJS, 'base64', 'utf8');
   src += decipher.final('utf8');
   // Create new module from decrypted JS
   const Module = module.constructor;
