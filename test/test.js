@@ -1,12 +1,15 @@
 const assert = require('assert');
+const pjs = require('..');
+const javascriptObfuscator = require('javascript-obfuscator');
 const mockfs = require('mock-fs');
 const fs = require('fs');
-const pjs = require('..');
 
 
 describe('PJS', function(){
   // Configure mocks
   before(function(){
+    // NOTE: this is a hack for Javascript-Obfuscator load all dynamic dependencies before to mock fs
+    javascriptObfuscator.obfuscate('true');
     mockfs({
       "dummy.js": `
         /* This is a minimal JS module to export a true boolean */
