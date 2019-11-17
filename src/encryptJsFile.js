@@ -53,7 +53,7 @@ function randomVarName(){
 }
 
 function selfDecryptJsString(src, filename='memory.js'){
-  let passwordMsg = "Please do not crack or software, we also need to eat :( )";
+  let passwordMsg = "Please do not crack or software, we also need to eat :( ";
   let randomPassword = passwordMsg + crypto.randomBytes(256).toString('base64');
   let protectedJs = Buffer.from(encryptJsString(src, randomPassword), 'binary').toString('base64');
   let importPjsCode = fs.readFileSync(path.join(__dirname, 'importPjsFile.js'), {encoding: 'utf8'});
