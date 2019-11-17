@@ -28,8 +28,15 @@ describe('PJS', function(){
   });
   // Test cases
   it('should encrypt a JS file and import created PJS file', function(){
-    pjs.encryptJsFile('dummy.js', 'dummy.pjs', 'dummy');
-    let dummy = pjs.importPjsFile('dummy.pjs', 'dummy');
+    const password = 'dummy';
+    pjs.encryptJsFile('dummy.js', 'dummy.pjs', password);
+    let dummy = pjs.importPjsFile('dummy.pjs', password);
     assert.equal(dummy, true);
+  });
+  it('should encrypt a JS string and import PJS string', function(){
+    const password = 'dummy';
+    let protectedJs = pjs.encryptJsString('const c=1; module.exports.sum = function(a, b){return (a+b)*c;};', password, 'dummy.js');
+    let dummy = pjs.importPjsString(protectedJs, password);
+    assert.equal(dummy.sum(1, 2), 3);
   });
 });
