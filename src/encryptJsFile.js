@@ -79,8 +79,18 @@ function selfDecryptJsString(src, filename='memory.js'){
   while (importPjsName == importPjsStringName || importPjsName == passwordName || importPjsName == protectedJsName) {
     importPjsName = randomVarName();
   }
+  let decryptJsStringName = randomVarName();
+  while (decryptJsStringName == importPjsName || decryptJsStringName == importPjsStringName || decryptJsStringName == passwordName || decryptJsStringName == protectedJsName) {
+    decryptJsStringName = randomVarName();
+  }
+  let pjsPathName = randomVarName();
+  while (pjsPathName == decryptJsStringName || pjsPathName == importPjsName || pjsPathName == importPjsStringName || pjsPathName == passwordName || pjsPathName == protectedJsName) {
+    pjsPathName = randomVarName();
+  }
   selfDecryptJs = selfDecryptJs.replace(/importPjsString/g, importPjsStringName);
   selfDecryptJs = selfDecryptJs.replace(/importPjs/g, importPjsName);
+  selfDecryptJs = selfDecryptJs.replace(/decryptJsString/g, decryptJsStringName);
+  selfDecryptJs = selfDecryptJs.replace(/pjsPath/g, pjsPathName);
   return obfuscate(selfDecryptJs);
 }
 
