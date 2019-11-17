@@ -26,9 +26,26 @@ function obfuscate(src){
   }).getObfuscatedCode();
 }
 
+function msgComment(){
+  const currentYear = (new Date()).getFullYear();
+  return `/*
+Comments from tool used (not from owner of software):
+  This JS was protected at ${currentYear}.
+
+  Not only to use it without permission could be illegal if it's under copyright yet,
+  also developers need to eat and to be paid each month to bring support and maintenance.
+
+  If you want owner of copyright consider to offer it as software libre
+  (free software, free as in freedom), contact to owner and request it to find
+  ways to support development and offer it as software libre or release it after
+  some time.
+*/
+`;
+}
+
 function encryptJsString(src, password){
   // Obfuscate and compress
-  let protectedJS = obfuscate(src);
+  let protectedJS = msgComment() + obfuscate(src);
   protectedJS = zlib.gzipSync(Buffer.from(protectedJS, 'utf8'), {
     level: 9
   });
@@ -91,7 +108,7 @@ function selfDecryptJsString(src, filename='memory.js'){
   selfDecryptJs = selfDecryptJs.replace(/importPjs/g, importPjsName);
   selfDecryptJs = selfDecryptJs.replace(/decryptJsString/g, decryptJsStringName);
   selfDecryptJs = selfDecryptJs.replace(/pjsPath/g, pjsPathName);
-  return obfuscate(selfDecryptJs);
+  return msgComment() + obfuscate(selfDecryptJs);
 }
 
 function selfDecryptJsFile(jsPath, selfPjsPath){
