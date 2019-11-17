@@ -14,14 +14,14 @@ function obfuscate(src){
     deadCodeInjectionThreshold: 1.0,
     debugProtection: false,
     domainLock: [],
-    renameGlobals: false,
+    renameGlobals: true,
     selfDefending: false,
     sourceMap: false,
     stringArray: true,
     stringArrayEncoding: true,
     stringArrayThreshold: 1.0,
     rotateStringArray: true,
-    transformObjectKeys: false,
+    transformObjectKeys: true,
     unicodeEscapeSequence: true
   }).getObfuscatedCode();
 }
@@ -58,7 +58,7 @@ function selfDecryptJsString(src, filename='memory.js'){
   let protectedJs = Buffer.from(encryptJsString(src, randomPassword), 'binary').toString('base64');
   let importPjsCode = fs.readFileSync(path.join(__dirname, 'importPjsFile.js'), {encoding: 'utf8'});
   // Remove set of exports
-  importPjsCode = obfuscate(importPjsCode.replace(/module.exports *=(.|\n|\r)*(\n|;)/, ''));
+  importPjsCode = importPjsCode.replace(/module.exports *=(.|\n|\r)*(\n|;)/, '');
   // Get random variable names not repeated
   let passwordName = randomVarName();
   let protectedJsName = randomVarName();
