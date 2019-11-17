@@ -1,6 +1,6 @@
 {
   "name": "protectedjs",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "Support for protected JS files",
   "main": "index.js",
   "bin": {
