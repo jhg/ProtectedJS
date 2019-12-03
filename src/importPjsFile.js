@@ -21,7 +21,7 @@ function importPjsString(protectedJS, password, filename='memory.pjs'){
   try{
     dynModule._compile(src, filename);
   }catch(e){
-    throw `Error loading ${pjsPath} PJS module (${e})`;
+    throw `Error loading ${filename} PJS module (${e})`;
   }
   return dynModule.exports;
 }
