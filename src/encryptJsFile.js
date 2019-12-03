@@ -111,15 +111,28 @@ function selfDecryptJsString(src, filename='memory.js'){
   return msgComment() + obfuscate(selfDecryptJs);
 }
 
-function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0){
+function overwrapSelfDecryptJsString(src, filename, overwrap=0){
+  for(let iterator = 0; iterator < overwrap; iterator++){
+    src = selfDecryptJsString(src, filename);
+  }
+  return src;
+}
+
+function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0, dummyfile=true){
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let filename = path.basename(jsPath);
   let protectedJs = selfDecryptJsString(src, filename);
   // To make a Matrioshka of obfuscation and encryption
-  for(let iterator = 0; iterator < overwrap; iterator++){
-    protectedJs = selfDecryptJsString(protectedJs, filename);
+  protectedJs = overwrapSelfDecryptJsString(protectedJs, filename, overwrap);
+  if (dummyfile) {
+    let randomFileName = randomVarName() + '.js';
+    fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), protectedJs, {encoding: 'utf8'});
+    protectedJs = `module.exports = require('./${randomFileName}');`;
+    protectedJs = overwrapSelfDecryptJsString(protectedJs, randomFileName, overwrap + 1);
+    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
+  } else {
+    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
   }
-  fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
 }
 
 module.exports = {
