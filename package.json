@@ -17,9 +17,9 @@
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "mocha": "^6.2.2",
-    "mock-fs": "^4.10.3"
+    "mock-fs": "^4.10.4"
   },
   "dependencies": {
-    "javascript-obfuscator": "^0.18.3"
+    "javascript-obfuscator": "^0.18.6"
   }
 }

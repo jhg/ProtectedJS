@@ -10,6 +10,7 @@ const outputPath = process.argv[3];
 const passwordPJS = process.argv[4];
 const overwrap = process.argv[5] || 0;
 
+
 if (passwordPJS === '--self') {
   pjs.selfDecryptJsFile(sourcePath, outputPath, overwrap);
 } else {
