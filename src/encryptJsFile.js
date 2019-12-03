@@ -66,7 +66,7 @@ function encryptJsFile(jsPath, pjsPath, password){
 
 function randomVarName(){
   const length = Math.round(Math.random()*16)+8;
-  return crypto.randomBytes(length).toString('base64').replace(/^[0-9]*/, '').replace(/[^a-zA-Z0-9]*/g, '');
+  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]*/g, '').replace(/[0-9]*$/, '').replace(/^[0-9]*/, '');
 }
 
 function selfDecryptJsString(src, filename='memory.js'){
