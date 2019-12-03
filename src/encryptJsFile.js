@@ -47,6 +47,7 @@ Comments from tool used (not from owner of software):
 function encryptJsString(src, password){
   // Obfuscate and compress
   let protectedJS = msgComment() + obfuscate(src);
+  delete src;
   protectedJS = zlib.gzipSync(Buffer.from(protectedJS, 'utf8'), {
     level: 9
   });
@@ -61,6 +62,7 @@ function encryptJsFile(jsPath, pjsPath, password){
   // Load source JS
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let protectedJS = encryptJsString(src, password);
+  delete src;
   // Write ProtectedJS
   fs.writeFileSync(pjsPath, protectedJS, {encoding: 'binary'});
 }
@@ -88,6 +90,8 @@ function selfDecryptJsString(src, filename='memory.js'){
   const ${protectedJsName} = Buffer.from('${protectedJs}', 'base64').toString('binary');
   ${importPjsCode}
   module.exports = importPjsString(${protectedJsName}, ${passwordName}, '${filename}');`;
+  delete protectedJs;
+  delete importPjsCode;
   // Replace some names
   let importPjsStringName = randomVarName();
   while (importPjsStringName == passwordName || importPjsStringName == protectedJsName) {
