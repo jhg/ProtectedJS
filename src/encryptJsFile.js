@@ -19,7 +19,7 @@ function obfuscate(src){
     selfDefending: false,
     sourceMap: false,
     stringArray: true,
-    stringArrayEncoding: 'base64',
+    stringArrayEncoding: 'rc4',
     stringArrayThreshold: 1.0,
     rotateStringArray: true,
     transformObjectKeys: true,
