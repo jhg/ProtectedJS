@@ -6,6 +6,7 @@ const javascriptObfuscator = require('javascript-obfuscator');
 
 
 function obfuscate(src){
+  const sizeThreshold = 512;  // 512B
   return javascriptObfuscator.obfuscate(src, {
     compact: true,
     controlFlowFlattering: true,
@@ -22,7 +23,7 @@ function obfuscate(src){
     stringArrayThreshold: 1.0,
     rotateStringArray: true,
     transformObjectKeys: true,
-    unicodeEscapeSequence: (src.length < 102400) // Only if source code is smaller than 100 KB
+    unicodeEscapeSequence: (src.length < sizeThreshold)
   }).getObfuscatedCode();
 }
 
