@@ -133,7 +133,7 @@ function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0, dummyfile=true){
     let randomFileName = randomVarName() + '.js';
     fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), protectedJs, {encoding: 'utf8'});
     protectedJs = `module.exports = require('./${randomFileName}');`;
-    protectedJs = overwrapSelfDecryptJsString(protectedJs, randomFileName, overwrap + 1);
+    protectedJs = overwrapSelfDecryptJsString(protectedJs, randomFileName, (overwrap + 1) * 2);
     fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
   } else {
     fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
