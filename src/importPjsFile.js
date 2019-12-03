@@ -19,7 +19,7 @@ function importPjsString(protectedJS, password, filename='memory.pjs'){
   // Create new module from decrypted JS
   let dynModule = new Module(filename, module.parent);
   dynModule.filename = filename;
-  dynModule.paths = module.paths
+  dynModule.paths = module.paths;
   try{
     dynModule._compile(src, filename);
   }catch(e){
