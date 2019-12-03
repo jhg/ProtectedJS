@@ -123,20 +123,22 @@ function overwrapSelfDecryptJsString(src, filename, overwrap=0){
   return src;
 }
 
-function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0, dummyfile=true){
+function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=2, dummyfile=true){
+  if (overwrap < 2) {
+    overwrap = 2;
+  }
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let filename = path.basename(jsPath);
-  let protectedJs = selfDecryptJsString(src, filename);
   // To make a Matrioshka of obfuscation and encryption
-  protectedJs = overwrapSelfDecryptJsString(protectedJs, filename, overwrap);
+  src = overwrapSelfDecryptJsString(src, filename, overwrap);
   if (dummyfile) {
     let randomFileName = randomVarName() + '.js';
-    fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), protectedJs, {encoding: 'utf8'});
-    protectedJs = `module.exports = require('./${randomFileName}');`;
-    protectedJs = overwrapSelfDecryptJsString(protectedJs, randomFileName, (overwrap + 1) * 2);
-    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
+    fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), src, {encoding: 'utf8'});
+    src = `module.exports = require('./${randomFileName}');`;
+    src = overwrapSelfDecryptJsString(src, randomFileName, overwrap);
+    fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
   } else {
-    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
+    fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
   }
 }
 
