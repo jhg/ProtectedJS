@@ -6,7 +6,7 @@ const javascriptObfuscator = require('javascript-obfuscator');
 
 
 function obfuscate(src){
-  const sizeThreshold = 512;  // 512B
+  const sizeThreshold = 102400;  // 100KB
   return javascriptObfuscator.obfuscate(src, {
     compact: true,
     controlFlowFlattering: true,
