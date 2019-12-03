@@ -17,7 +17,9 @@ function decryptJsString(protectedJS, password){
 function importPjsString(protectedJS, password, filename='memory.pjs'){
   let src = decryptJsString(protectedJS, password);
   // Create new module from decrypted JS
-  let dynModule = new Module();
+  let dynModule = new Module(filename, module.parent);
+  dynModule.filename = filename;
+  dynModule.paths = module.paths
   try{
     dynModule._compile(src, filename);
   }catch(e){
