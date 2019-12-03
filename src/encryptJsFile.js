@@ -111,10 +111,14 @@ function selfDecryptJsString(src, filename='memory.js'){
   return msgComment() + obfuscate(selfDecryptJs);
 }
 
-function selfDecryptJsFile(jsPath, selfPjsPath){
+function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0){
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let filename = path.basename(jsPath);
   let protectedJs = selfDecryptJsString(src, filename);
+  // To make a Matrioshka of obfuscation and encryption
+  for(let iterator = 0; iterator < overwrap; iterator++){
+    protectedJs = selfDecryptJsString(protectedJs, filename);
+  }
   fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
 }
 
