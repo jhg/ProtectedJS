@@ -18,11 +18,11 @@ function obfuscate(src){
     selfDefending: false,
     sourceMap: false,
     stringArray: true,
-    stringArrayEncoding: true,
+    stringArrayEncoding: 'base64',
     stringArrayThreshold: 1.0,
     rotateStringArray: true,
     transformObjectKeys: true,
-    unicodeEscapeSequence: true
+    unicodeEscapeSequence: (src.length < 102400) // Only if source code is smaller than 100 KB
   }).getObfuscatedCode();
 }
 
