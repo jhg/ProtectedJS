@@ -6,6 +6,7 @@ const javascriptObfuscator = require('javascript-obfuscator');
 
 
 function obfuscate(src){
+  const sizeThreshold = 102400;  // 100KB
   return javascriptObfuscator.obfuscate(src, {
     compact: true,
     controlFlowFlattering: true,
@@ -18,11 +19,11 @@ function obfuscate(src){
     selfDefending: false,
     sourceMap: false,
     stringArray: true,
-    stringArrayEncoding: 'base64',
+    stringArrayEncoding: 'rc4',
     stringArrayThreshold: 1.0,
     rotateStringArray: true,
     transformObjectKeys: true,
-    unicodeEscapeSequence: (src.length < 102400) // Only if source code is smaller than 100 KB
+    unicodeEscapeSequence: (src.length < sizeThreshold)
   }).getObfuscatedCode();
 }
 
@@ -46,6 +47,7 @@ Comments from tool used (not from owner of software):
 function encryptJsString(src, password){
   // Obfuscate and compress
   let protectedJS = msgComment() + obfuscate(src);
+  delete src;
   protectedJS = zlib.gzipSync(Buffer.from(protectedJS, 'utf8'), {
     level: 9
   });
@@ -60,6 +62,7 @@ function encryptJsFile(jsPath, pjsPath, password){
   // Load source JS
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let protectedJS = encryptJsString(src, password);
+  delete src;
   // Write ProtectedJS
   fs.writeFileSync(pjsPath, protectedJS, {encoding: 'binary'});
 }
@@ -87,6 +90,8 @@ function selfDecryptJsString(src, filename='memory.js'){
   const ${protectedJsName} = Buffer.from('${protectedJs}', 'base64').toString('binary');
   ${importPjsCode}
   module.exports = importPjsString(${protectedJsName}, ${passwordName}, '${filename}');`;
+  delete protectedJs;
+  delete importPjsCode;
   // Replace some names
   let importPjsStringName = randomVarName();
   while (importPjsStringName == passwordName || importPjsStringName == protectedJsName) {
@@ -118,20 +123,22 @@ function overwrapSelfDecryptJsString(src, filename, overwrap=0){
   return src;
 }
 
-function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=0, dummyfile=true){
+function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=2, dummyfile=true){
+  if (overwrap < 2) {
+    overwrap = 2;
+  }
   let src = fs.readFileSync(jsPath, {encoding: 'utf8'});
   let filename = path.basename(jsPath);
-  let protectedJs = selfDecryptJsString(src, filename);
   // To make a Matrioshka of obfuscation and encryption
-  protectedJs = overwrapSelfDecryptJsString(protectedJs, filename, overwrap);
+  src = overwrapSelfDecryptJsString(src, filename, overwrap);
   if (dummyfile) {
     let randomFileName = randomVarName() + '.js';
-    fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), protectedJs, {encoding: 'utf8'});
-    protectedJs = `module.exports = require('./${randomFileName}');`;
-    protectedJs = overwrapSelfDecryptJsString(protectedJs, randomFileName, overwrap + 1);
-    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
+    fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), src, {encoding: 'utf8'});
+    src = `module.exports = require('./${randomFileName}');`;
+    src = overwrapSelfDecryptJsString(src, randomFileName, overwrap);
+    fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
   } else {
-    fs.writeFileSync(selfPjsPath, protectedJs, {encoding: 'utf8'});
+    fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
   }
 }
 
