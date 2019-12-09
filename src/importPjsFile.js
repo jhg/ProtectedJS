@@ -14,10 +14,10 @@ function decryptJsString(protectedJS, password){
   return src;
 }
 
-function importPjsString(protectedJS, password, filename='memory.pjs'){
+function importPjsString(protectedJS, password, filename=module.filename, id='', parent=module.parent){
   let src = decryptJsString(protectedJS, password);
   // Create new module from decrypted JS
-  let dynModule = new Module(filename, module.parent);
+  let dynModule = new Module(id, parent);
   dynModule.filename = filename;
   dynModule.paths = module.paths;
   try{

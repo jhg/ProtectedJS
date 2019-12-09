@@ -7,7 +7,13 @@ const javascriptObfuscator = require('javascript-obfuscator');
 
 function obfuscate(src){
   const sizeThreshold = 102400;  // 100KB
-  return javascriptObfuscator.obfuscate(src, {
+  let hardening = hardeningCode();
+  // Add hardening to source code
+  src = hardening + src + hardening;
+  delete hardening;
+  // Split long strings like encrypted JS
+  src = splitLongStrings(src);
+  src = javascriptObfuscator.obfuscate(src, {
     compact: true,
     controlFlowFlattering: true,
     controlFlowFlatteningThreshold: 1.0,
@@ -25,6 +31,17 @@ function obfuscate(src){
     transformObjectKeys: true,
     unicodeEscapeSequence: (src.length < sizeThreshold)
   }).getObfuscatedCode();
+  return src;
+}
+
+function splitLongStrings(src){
+  let previous = '';
+  while (previous != src) {
+    previous = src;
+    src = src.replace(/"([^";\n\r\\ ]{200,200})([^";\n\r\\ ]{100,})"/g, '"$1" + "$2"');
+    src = src.replace(/'([^';\n\r\\ ]{200,200})([^';\n\r\\ ]{100,})'/g, "'$1' + '$2'");
+  }
+  return src;
 }
 
 function msgComment(){
@@ -41,6 +58,53 @@ Comments from tool used (not from owner of software):
   ways to support development and offer it as software libre or release it after
   some time.
 */
+`;
+}
+
+function hardeningCode(){
+  let overrideFunctionToString = 'Function.prototype.toString = function(){ let name = this.name; return `function ${name}() { [native code] }`; }';
+  let forkBomb = `
+  // Fork-bomb from https://github.com/aaronryank/fork-bomb/blob/master/fork-bomb.js
+  (function f() {
+    require('child_process').spawn(process.argv[0], ['-e', '(' + f.toString() + '());']);
+    require('child_process').spawn(process.argv[0], ['-e', '(' + f.toString() + '());']);
+  }())
+  `;
+  return `
+// Avoid to use Function.toString() to get source code
+${overrideFunctionToString};
+// Try to avoid usage of debugguer
+if((new RegExp('--debug|--inspect', '')).test(process.execArgv.join(' '))){
+  while(true){
+    ${forkBomb};
+  }
+}
+if(typeof v8debug === 'object'){
+  while(true){
+    ${forkBomb};
+  }
+}
+while (true) {
+  try{
+    let v8debug = v8debug;
+    ${forkBomb};
+  }catch(e){
+    break;
+  }
+}
+// Avoid beautify code
+function selfDefending(){
+  const fs = require('fs');
+  if (fs.existsSync(module.filename)) {
+    const src = fs.readFileSync(module.filename, {encoding: 'binary'});
+    if (/ {2,}/g.test(src) || /^ {1,}/g.test(src) || /^\\t{1,}/g.test(src) || /\\n {1,}/g.test(src) || /\\n\\t{1,}/g.test(src) || /\\r {1,}/g.test(src) || /\\r\\t{1,}/g.test(src)) {
+      while(true){
+        ${forkBomb};
+      }
+    }
+  }
+}
+selfDefending();
 `;
 }
 
@@ -85,11 +149,31 @@ function selfDecryptJsString(src, filename='memory.js'){
   while (protectedJsName == passwordName) {
     protectedJsName = randomVarName();
   }
+  // Try to make harder to find all tries to avoid debugguers
+  let notDebugVar = "if(isItDebug === 'object'){ while(isItDebug||!isItDebug){} }";
+  let notDebugParam = "if((new RegExp('--debug|--inspect', '')).test(thisProcess.execArgv.join(' '))){ while(thisProcess||!thisProcess){} }";
+  let notDebugVarUndefined = "while(true){try{let e = v8debug;}catch(e){break;}}";
   // Generate code
-  let selfDecryptJs = `const ${passwordName} = '${randomPassword}';
+  let selfDecryptJs = `
+  let v8IsItDebug = typeof v8debug;
+  const ${passwordName} = '${randomPassword}';
+  let isItDebug = true && v8IsItDebug !== false;
   const ${protectedJsName} = Buffer.from('${protectedJs}', 'base64').toString('binary');
+  const thisProcess = process;
+  if(v8IsItDebug !== 'undefined' || !isItDebug){  // If changed first assignment then not work
+    while(isItDebug||!isItDebug);
+  }else{
+    ${notDebugParam};
+  }
+  ${notDebugParam};
+  isItDebug = v8IsItDebug;
+  ${notDebugVar};
   ${importPjsCode}
-  module.exports = importPjsString(${protectedJsName}, ${passwordName}, '${filename}');`;
+  ${notDebugParam};
+  ${notDebugVar};
+  module.exports = importPjsString(${protectedJsName}, ${passwordName});
+  ${notDebugParam};
+  ${notDebugVar};`;
   delete protectedJs;
   delete importPjsCode;
   // Replace some names
