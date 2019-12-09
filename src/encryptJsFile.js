@@ -132,8 +132,12 @@ function encryptJsFile(jsPath, pjsPath, password){
 }
 
 function randomVarName(){
-  const length = Math.round(Math.random()*16)+8;
-  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]*/g, '').replace(/[0-9]*$/, '').replace(/^[0-9]*/, '');
+  const length = Math.round(Math.random()*60)+30;
+  let varName = '';
+  while (varName.length < 20) {
+    varName = varName + crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]*/g, '').replace(/[0-9]*$/, '').replace(/^[0-9]*/, '');
+  }
+  return varName;
 }
 
 function selfDecryptJsString(src, filename='memory.js'){
