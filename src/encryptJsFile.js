@@ -179,7 +179,7 @@ function selfDecryptJsString(src, filename='memory.js'){
   return msgComment() + obfuscate(selfDecryptJs);
 }
 
-function overwrapSelfDecryptJsString(src, filename, overwrap=0){
+function overwrapSelfDecryptJsString(src, filename, overwrap=1){
   for(let iterator = 0; iterator < overwrap; iterator++){
     src = selfDecryptJsString(src, filename);
   }
@@ -194,12 +194,37 @@ function selfDecryptJsFile(jsPath, selfPjsPath, overwrap=2, dummyfile=true){
   let filename = path.basename(jsPath);
   // To make a Matrioshka of obfuscation and encryption
   src = overwrapSelfDecryptJsString(src, filename, overwrap);
+  console.log('Source code done');
   if (dummyfile) {
+    let rightCodeLength = src.length;  // To create later dummy files with similar size
     let randomFileName = randomVarName() + '.js';
     fs.writeFileSync(path.join(path.dirname(selfPjsPath), randomFileName), src, {encoding: 'utf8'});
-    src = `module.exports = require('./${randomFileName}');`;
-    src = overwrapSelfDecryptJsString(src, randomFileName, overwrap);
-    fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
+    delete src;
+    // Chain requires dummy files
+    let maxDummyFiles = Math.round(Math.random()*2)+3;
+    for(let iterator = 0; iterator < maxDummyFiles; iterator++){
+      let dummySrc = `module.exports = require('./${randomFileName}');`;
+      let threshold = Math.round(Math.random()*204800)-102400;  // +- 100KB
+      let dummyFileName = randomVarName() + '.js';
+      while(rightCodeLength / 2 > dummySrc.length + threshold){
+        let backup = dummySrc;
+        try{
+          dummySrc = overwrapSelfDecryptJsString(dummySrc, dummyFileName, 1);
+        }catch(e){
+          console.log(e);
+          dummySrc = backup;
+          break;
+        }
+      }
+      console.log('Dummy file ' + (iterator + 1) + ' of ' + maxDummyFiles + ' done');
+      fs.writeFileSync(path.join(path.dirname(selfPjsPath), dummyFileName), dummySrc, {encoding: 'utf8'});
+      randomFileName = dummyFileName;  // To chain with next loop
+    }
+    // Main file to require all the chain
+    let mainDummySrc = `module.exports = require('./${randomFileName}');`;
+    mainDummySrc = overwrapSelfDecryptJsString(mainDummySrc, randomFileName, overwrap);
+    console.log('Dummy entrypoint done');
+    fs.writeFileSync(selfPjsPath, mainDummySrc, {encoding: 'utf8'});
   } else {
     fs.writeFileSync(selfPjsPath, src, {encoding: 'utf8'});
   }
