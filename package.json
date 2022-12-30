@@ -16,7 +16,7 @@
   "author": "Jesús Hernández Gormaz <0.jesus.hg@gmail.com>",
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "mock-fs": "^4.10.4"
   },
   "dependencies": {
